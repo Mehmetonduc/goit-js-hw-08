@@ -66,21 +66,27 @@ const images = [
 
 const list = document.querySelector(".gallery");
 
-images.forEach(({ preview, original, description }) => {
-  list.innerHTML += `<li class="gallery-item">
-  <a class="gallery-link" href="${original}">
-    <img
-      class="gallery-image"
-      src="${preview}"
-      data-source="${original}"
-      alt="${description}"
-      width="360"
-      height="200"
-    />
-  </a>
-</li>
-`;
-});
+const markup = images
+  .map(({ preview, original, description }) => {
+    return `
+      <li class="gallery-item">
+        <a class="gallery-link" href="${original}">
+          <img
+            class="gallery-image"
+            src="${preview}"
+            data-source="${original}"
+            alt="${description}"
+            width="360"
+            height="200"
+          />
+        </a>
+      </li>
+    `;
+  })
+  .join("");
+
+list.innerHTML = markup;
+
 list.addEventListener("click", function (e) {
   e.preventDefault();
   if (e.target.nodeName === "IMG") {
@@ -89,10 +95,13 @@ list.addEventListener("click", function (e) {
     );
     instance.show();
 
-    document.addEventListener("keyup", function (e) {
-      if (e.code === "Escape") {
+    function handleKey(event) {
+      if (event.code === "Escape") {
         instance.close();
+        document.removeEventListener("keyup", handleKey);
       }
-    });
+    }
+
+    document.addEventListener("keyup", handleKey);
   }
 });
